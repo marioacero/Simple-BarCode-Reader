@@ -15,6 +15,8 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        let tapGR = UITapGestureRecognizer(target: self, action: #selector(handleTap(sender:)))
+        view.addGestureRecognizer(tapGR)
         reader.delegate = self
         startScaning()
     }
@@ -33,12 +35,15 @@ class ViewController: UIViewController {
         preview!.frame = view.layer.bounds
         view.layer.addSublayer(preview!)
     }
-
-
+    
+    @objc func handleTap(sender: UITapGestureRecognizer) {
+        startScaning()
+    }
 }
 
 extension ViewController: BarCodeReaderDelegate {
     func barCodeReader(_ reader: BarCodeReader, didReadCode code: String) {
         print(code)
+        reader.stop()
     }
 }
