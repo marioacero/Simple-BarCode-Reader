@@ -15,6 +15,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        reader.delegate = self
         startScaning()
     }
 
@@ -36,3 +37,8 @@ class ViewController: UIViewController {
 
 }
 
+extension ViewController: BarCodeReaderDelegate {
+    func barCodeReader(_ reader: BarCodeReader, didReadCode code: String) {
+        print(code)
+    }
+}

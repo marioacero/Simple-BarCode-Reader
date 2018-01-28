@@ -18,6 +18,9 @@ class BarCodeReader: NSObject {
     weak var delegate: BarCodeReaderDelegate?
     var previewLayer: AVCaptureVideoPreviewLayer?
     private var session: AVCaptureSession?
+    private let outputQueue = DispatchQueue(label: "AvMetadataOutPut",
+                                         qos: .userInteractive,
+                                         attributes: [])
     
     func start() -> Bool {
         guard let newSession = setCaptureSession() else {
@@ -68,3 +71,24 @@ class BarCodeReader: NSObject {
         metadataOutput.metadataObjectTypes = [.qr]
     }
 }
+
+extension BarCodeReader: AVCaptureMetadataOutputObjectsDelegate {
+    
+    func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
+        guard let session = session, session.isRunning else { return }
+        
+        guard let qrCode = metadataObjects.first as? AVMetadataMachineReadableCodeObject else { return }
+        
+        DispatchQueue.main.sync {
+            if let string = qrCode.stringValue {
+                self.delegate?.barCodeReader(self, didReadCode: string)
+            }
+        }
+    }
+}
+
+
+
+
+
+
